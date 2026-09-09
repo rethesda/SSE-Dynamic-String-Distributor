@@ -140,4 +140,14 @@ namespace RE
 		}
 		}
 	}
+
+	/*	TESBoundObject* __fastcall TESObjectREFR::GetOriginalObjectReference(TESObjectREFR* this)
+		{
+			TESBoundObject* result; // rax
+
+			result = (TESBoundObject*)ExtraDataList::GetLevCreaOriginalBase(this->spExtraList.pPtr);
+			if (!result)
+				return this->data.pObjectReference;
+			return result;
+		}*/
 }

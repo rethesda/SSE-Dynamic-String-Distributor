@@ -408,7 +408,8 @@ const char* Manager::getTranslation(const RE::FormID formID, const std::uint32_t
 
 void Manager::parseTranslationFiles()
 {
-	SKSE::log::debug("Start parseTranslationFiles...");
+	clib_util::Timer timer;
+	timer.start();
 
 	m_constTranslation.clear();
 	m_runtimeMap1.clear();
@@ -443,7 +444,8 @@ void Manager::parseTranslationFiles()
 
 	m_loadOrder.clear();
 
-	SKSE::log::debug("... Finished parseTranslationFiles!");
+	timer.stop();
+	SKSE::log::debug("{} Done! Time taken: {}", __FUNCTION__, timer.duration());
 }
 
 void Manager::setConstString(RE::TESForm* form, const ConstTranslationData& entry)

@@ -224,8 +224,61 @@ namespace Hook
 
 		static void Install()
 		{
-			REL::Relocation<std::uintptr_t> target1{ REL::VariantID(34644, 35566, 0x581D10), REL::Relocate(0x3AA, 0x25F) };
+			const bool ae2 = REL::Module::get().version() >= SKSE::RUNTIME_SSE_1_7_99;
+			REL::Relocation<std::uintptr_t> target1{ REL::VariantID(34644, 35566, 0x581D10), REL::Relocate(0x3AA, ae2 ? 0x265 : 0x25F) };
 			stl::write_thunk_call<ReconstructForms>(target1.address());
+		}
+	};
+
+	struct MainUpdate
+	{
+		static void thunk()
+		{
+			func();
+
+			const auto ui = RE::UI::GetSingleton();
+			if (!ui || ui->GameIsPaused())
+				return;
+
+			const auto datahandler = RE::TESDataHandler::GetSingleton();
+			const auto player = RE::PlayerCharacter::GetSingleton();
+			if (!player || !datahandler)
+				return;
+
+			const auto callback = [](RE::TESObjectREFR* ref, [[maybe_unused]] std::uint64_t data) -> bool
+				{
+					if (ref)
+					{
+						const auto base = ref->GetBaseObject();
+						const std::string baseMessage = base ? std::format("{:08X} - {}", base->GetFormID(), RE::FormTypeToString(base->GetFormType())) : "Unknown";
+						SKSE::log::debug("Found Reference {:08X} - {} with base object {}", ref->GetFormID(), RE::FormTypeToString(ref->GetFormType()), baseMessage);
+					}
+
+					return false; // exit on true, continue on false
+				};
+
+			constexpr float radius = 10000.0f;
+			RE::enumReferencesCloseToRef(datahandler, player, radius, player->data.location, radius, callback, 0);
+		};
+		static inline REL::Relocation<decltype(thunk)> func;
+
+		static void Install()
+		{
+			const auto runtime = REL::Module::get().version();
+
+			// just kill me at this point
+			int AEOffset = 0xC26;
+			if (runtime >= SKSE::RUNTIME_SSE_1_7_99)
+			{
+				AEOffset = 0xC3D;
+			}
+			else if (runtime >= SKSE::RUNTIME_SSE_1_6_1130)
+			{
+				AEOffset = 0xC2B;
+			}
+
+			REL::Relocation<std::uintptr_t> target1{ RELOCATION_ID(35565, 36564), REL::Relocate(0x748, AEOffset, 0x7EE) };
+			stl::write_thunk_call<MainUpdate>(target1.address());
 		}
 	};
 
@@ -238,6 +291,7 @@ namespace Hook
 		GetResponseListHook::Install();
 		DialogueMenuTextHook::Install();
 		ReconstructForms::Install();
+		MainUpdate::Install();
 
 		SKSE::log::info("{} Done!", __FUNCTION__);
 	}

@@ -50,6 +50,7 @@
 #include "RE.h"
 
 #include <ClibUtil/string.hpp>
+#include <ClibUtil/timer.hpp>
 #include <ClibUtil/distribution.hpp>
 
 #include <boost/unordered/unordered_node_map.hpp>
