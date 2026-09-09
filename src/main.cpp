@@ -1,13 +1,6 @@
 ﻿#include "Manager.h"
 #include "Hooks.h"
 
-bool CompileFiles(RE::TESDataHandler* a_data, bool downloadedContent)
-{
-	using func_t = decltype(&CompileFiles);
-	static REL::Relocation<func_t> func{ RELOCATION_ID(13645, 0) };
-	return func(a_data, downloadedContent);
-}
-
 void MessageListener(SKSE::MessagingInterface::Message* message)
 {
 	switch (message->type)
@@ -41,9 +34,7 @@ void MessageListener(SKSE::MessagingInterface::Message* message)
 	}
 }
 
-#define DLLEXPORT __declspec(dllexport)
-
-extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []()
+SKSE_PLUGIN_VERSION = []()
 	{
 		SKSE::PluginVersionData v;
 		v.PluginName(Plugin::NAME);
@@ -55,7 +46,7 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []()
 	}
 ();
 
-extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface*, SKSE::PluginInfo* pluginInfo)
+SKSE_PLUGIN_QUERY(const SKSE::QueryInterface*, SKSE::PluginInfo* pluginInfo)
 {
 	pluginInfo->name = SKSEPlugin_Version.pluginName;
 	pluginInfo->infoVersion = SKSE::PluginInfo::kVersion;
@@ -63,7 +54,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface*, 
 	return true;
 }
 
-SKSEPluginLoad(const SKSE::LoadInterface* skse)
+SKSE_PLUGIN_LOAD(const SKSE::LoadInterface* skse)
 {
 	SKSE::Init(skse, true);
 	spdlog::set_pattern("[%H:%M:%S:%e] [%l] %v"s);

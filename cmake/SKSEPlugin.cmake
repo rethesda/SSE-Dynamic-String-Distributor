@@ -69,6 +69,7 @@ find_package(CommonLibSSE CONFIG REQUIRED)
 find_package(DirectXTK CONFIG REQUIRED)
 find_package(glaze CONFIG REQUIRED)
 find_package(boost_unordered CONFIG REQUIRED)
+find_package(boost_regex CONFIG REQUIRED)
 find_path(MERGEMAPPER_INCLUDE_DIRS "MergeMapperPluginAPI.h")
 
 # Include directories and libraries
@@ -85,4 +86,5 @@ target_link_libraries("${PROJECT_NAME}" PRIVATE
 CommonLibSSE::CommonLibSSE
 glaze::glaze
 Boost::unordered
+Boost::regex
 )
