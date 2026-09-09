@@ -164,11 +164,11 @@ namespace Hook
 		static void Install()
 		{
 			// datahandler compile files
-			REL::Relocation<std::uintptr_t> target1{ RELOCATION_ID(13645, 0), REL::Relocate(0x341, 0x0) };
+			REL::Relocation<std::uintptr_t> target1{ RELOCATION_ID(13645, 13753), REL::Relocate(0x341, 0x363) };
 			stl::write_thunk_call<DataHandlerInitAllForms>(target1.address());
 
 			// plugin hot reload
-			REL::Relocation<std::uintptr_t> target2{ RELOCATION_ID(13672, 0), REL::Relocate(0xB05, 0x0) };
+			REL::Relocation<std::uintptr_t> target2{ RELOCATION_ID(13672, 13785), REL::Relocate(0xB05, 0xB8B) };
 			stl::write_thunk_call<DataHandlerInitAllForms>(target2.address());
 		}
 	};
@@ -186,20 +186,12 @@ namespace Hook
 			}
 
 			func(to, from); // call original just for compatibility reasons
-
-			//auto fromForm = skyrim_cast<const RE::TESNPC*>(from);
-/*			auto fromID = fromForm ? fromForm->formID : 0;
-
-			auto toForm = skyrim_cast<const RE::TESNPC*>(to);
-			auto toID = toForm ? toForm->formID : 0;
-
-			SKSE::log::info("NameFrom: {} - NameTo: {} - From: {:08X} - To: {:08X}", fromForm->GetFullName(), toForm->GetFullName(), fromID, toID);*/
 		}
 		static inline REL::Relocation<decltype(thunk)> func;
 
 		static void Install()
 		{
-			REL::Relocation<std::uintptr_t> target{ RELOCATION_ID(14544, 0) };
+			REL::Relocation<std::uintptr_t> target{ RELOCATION_ID(14544, 14716) };
 			stl::hook_function_prologue<NPCFullNameCopyComponent, 6>(target.address());
 		}
 	};
@@ -237,26 +229,6 @@ namespace Hook
 		}
 	};
 
-	/*struct EffectSettingCopy
-	{
-		static void thunk(RE::EffectSetting* to, RE::TESForm* from)
-		{
-			func(to, from);
-
-			auto fromID = to ? to->formID : 0;
-			auto toID = to ? to->formID : 0;
-
-			SKSE::log::info("NameTo: {} - From: {:08X} - To: {:08X}", to->GetFullName(), fromID, toID);
-		}
-		static inline REL::Relocation<decltype(thunk)> func;
-
-		static void Install()
-		{
-			REL::Relocation<std::uintptr_t> cameraVtable{ RE::VTABLE_EffectSetting[0] };
-			EffectSettingCopy::func = cameraVtable.write_vfunc(0x2F, &EffectSettingCopy::thunk);
-		}
-	};*/
-
 	void InstallHooks()
 	{
 		DataHandlerInitAllForms::Install();
@@ -267,6 +239,6 @@ namespace Hook
 		DialogueMenuTextHook::Install();
 		ReconstructForms::Install();
 
-		SKSE::log::info("Installed Hooks!");
+		SKSE::log::info("{} Done!", __FUNCTION__);
 	}
 }
