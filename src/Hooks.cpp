@@ -175,34 +175,32 @@ namespace Hook
 
 	struct NPCFullNameCopyComponent
 	{
-		// NPCs copy their FullName all the time, keep our data updated 
 		static void thunk(RE::TESFullName* to, RE::BaseFormComponent* from)
 		{
-			auto fromForm = skyrim_cast<RE::TESNPC*>(from);
+			auto fromForm = skyrim_cast<RE::TESForm*>(from);
 			if (fromForm)
 			{
+				// NPCs copy their FullName all the time
+				// also reload NPC_ SHRT here, gets copied afterwards
 				Manager::GetSingleton()->reloadConstTranslation(fromForm);
 			}
 
-			func(to, from);
+			func(to, from); // call original just for compatibility reasons
 
-			/*auto fromForm = skyrim_cast<const RE::TESNPC*>(from);
-			auto fromID = fromForm ? fromForm->formID : 0;
+			//auto fromForm = skyrim_cast<const RE::TESNPC*>(from);
+/*			auto fromID = fromForm ? fromForm->formID : 0;
 
 			auto toForm = skyrim_cast<const RE::TESNPC*>(to);
 			auto toID = toForm ? toForm->formID : 0;
 
-			SKSE::log::info("Name: {} - From: {:08X} - To: {:08X}", fromForm->GetFullName(), fromID, toID);*/
+			SKSE::log::info("NameFrom: {} - NameTo: {} - From: {:08X} - To: {:08X}", fromForm->GetFullName(), toForm->GetFullName(), fromID, toID);*/
 		}
 		static inline REL::Relocation<decltype(thunk)> func;
 
 		static void Install()
 		{
-			REL::Relocation<std::uintptr_t> target1{ RELOCATION_ID(24216, 0), REL::Relocate(0x15C, 0x0) };
-			stl::write_thunk_call<NPCFullNameCopyComponent>(target1.address());
-
-			REL::Relocation<std::uintptr_t> target2{ RELOCATION_ID(24160, 0), REL::Relocate(0xA0, 0x0) };
-			stl::write_thunk_call<NPCFullNameCopyComponent>(target2.address());
+			REL::Relocation<std::uintptr_t> target{ RELOCATION_ID(14544, 0) };
+			stl::hook_function_prologue<NPCFullNameCopyComponent, 6>(target.address());
 		}
 	};
 
@@ -238,6 +236,26 @@ namespace Hook
 			stl::write_thunk_call<ReconstructForms>(target1.address());
 		}
 	};
+
+	/*struct EffectSettingCopy
+	{
+		static void thunk(RE::EffectSetting* to, RE::TESForm* from)
+		{
+			func(to, from);
+
+			auto fromID = to ? to->formID : 0;
+			auto toID = to ? to->formID : 0;
+
+			SKSE::log::info("NameTo: {} - From: {:08X} - To: {:08X}", to->GetFullName(), fromID, toID);
+		}
+		static inline REL::Relocation<decltype(thunk)> func;
+
+		static void Install()
+		{
+			REL::Relocation<std::uintptr_t> cameraVtable{ RE::VTABLE_EffectSetting[0] };
+			EffectSettingCopy::func = cameraVtable.write_vfunc(0x2F, &EffectSettingCopy::thunk);
+		}
+	};*/
 
 	void InstallHooks()
 	{

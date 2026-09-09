@@ -22,4 +22,11 @@ namespace RE
 		static REL::Relocation<func_t> func{ REL::VariantID(15291, 15453, 0x1CB050) };
 		func(str, data);
 	}
+
+	inline void enumReferencesCloseToRef(RE::TESDataHandler* handler, RE::TESObjectREFR* ref, float radius1, const RE::NiPoint3& point2, float radius2, bool(*enumFunc)(RE::TESObjectREFR*, std::uint64_t), std::uint64_t enumData)
+	{
+		using func_t = decltype(&enumReferencesCloseToRef);
+		static REL::Relocation<func_t> func{ RELOCATION_ID(13605, 0) };
+		func(handler, ref, radius1, point2, radius2, enumFunc, enumData);
+	}
 }
